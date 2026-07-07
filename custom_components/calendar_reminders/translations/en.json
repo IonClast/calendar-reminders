@@ -1,0 +1,37 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Calendar Reminders",
+        "description": "Push reminders for calendar events via the Home Assistant Companion app.",
+        "data": {
+          "calendars": "Calendars to watch",
+          "notify_services": "Notify targets (your phones)",
+          "offsets_minutes": "Remind this many minutes before timed events",
+          "all_day_time": "Time of day to remind for all-day events",
+          "all_day_days_before": "Days before an all-day event to remind"
+        }
+      }
+    },
+    "error": {
+      "invalid_offsets": "Offsets must be positive whole numbers of minutes."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Calendar Reminders options",
+        "data": {
+          "calendars": "Calendars to watch",
+          "notify_services": "Notify targets (your phones)",
+          "offsets_minutes": "Remind this many minutes before timed events",
+          "all_day_time": "Time of day to remind for all-day events",
+          "all_day_days_before": "Days before an all-day event to remind"
+        }
+      }
+    },
+    "error": {
+      "invalid_offsets": "Offsets must be positive whole numbers of minutes."
+    }
+  }
+}
