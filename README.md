@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://raw.githubusercontent.com/IonClast/calendar-reminders/main/icons/icon%402x.png" width="140" alt="Calendar Reminders icon"/>
+</p>
+
 # Calendar Reminders for Home Assistant
 
 Native-feeling **push reminders for calendar events** via the Home Assistant
