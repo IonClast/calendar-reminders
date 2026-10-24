@@ -2,33 +2,42 @@
 
 DOMAIN = "calendar_reminders"
 
-# Config keys
+# Config entry (options) and device subentries
 CONF_CALENDARS = "calendars"
-CONF_NOTIFY_SERVICES = "notify_services"
-CONF_OFFSETS = "offsets_minutes"
-CONF_ALL_DAY_TIME = "all_day_time"
-CONF_ALL_DAY_DAYS_BEFORE = "all_day_days_before"
+CONF_DEFAULT_DEVICES = "default_devices"  # for a #remind line without @devices
+CONF_FALLBACK_DEVICE = "fallback_device"  # also gets lines naming an unknown @device
+CONF_SNOOZE_SHORT = "snooze_short"
+CONF_SNOOZE_LONG = "snooze_long"
+CONF_ALL_DAY_TIME = "all_day_time"  # plain "1d" on an all-day event fires at this time
+SUBENTRY_DEVICE = "device"
+CONF_ALIAS = "alias"
+CONF_NOTIFY_ACTION = "notify_action"
+CONF_LANGUAGE = "language"
+LANGUAGES = ("en", "nb")
 
-# Defaults
-DEFAULT_OFFSETS = ["10", "60"]
-DEFAULT_ALL_DAY_TIME = "18:00:00"
-DEFAULT_ALL_DAY_DAYS_BEFORE = 1
-OFFSET_PRESETS = ["5", "10", "15", "30", "60", "120", "240"]
-
-# Timing
-REFRESH_INTERVAL_MIN = 15   # how often we re-fetch upcoming events
-TICK_INTERVAL_SEC = 60      # how often we check if a reminder is due
-LOOKAHEAD_HOURS = 48        # how far ahead we fetch events
-GRACE_MINUTES = 10          # fire reminders up to this late (e.g. after restart)
-SNOOZE_MINUTES = 10
-
-# Notification action / events
-ACTION_PREFIX = "CALREM_SNOOZE_"
+# Events
 MOBILE_APP_ACTION_EVENT = "mobile_app_notification_action"
 BUS_EVENT_FIRED = f"{DOMAIN}_reminder_fired"
 
-# Storage
-STORAGE_VERSION = 1
+# Engine (engine.py)
+ENGINE_STORAGE_KEY = f"{DOMAIN}.engine"
+ENGINE_STORAGE_VERSION = 1
+WINDOW_PAST = 1  # days kept behind now (snoozes after the start, late handling)
+WINDOW_FUTURE = 35  # days ahead, so offsets of up to 4 weeks fire
+RESCAN_MINUTES = 15  # safety net next to the subscription push
+RESUBSCRIBE_AT = (0, 5)  # local HH, MM: the subscription window rolls daily
+LATE_AFTER_SECONDS = 60  # sent more than this after its time = "late"
+DUE_TOLERANCE_SECONDS = 1  # a timer firing this early still counts as due
+PRUNE_AFTER_DAYS = 2  # forget fired/snoozed state this long after the event
 
-# Description tag, e.g. "#remind 30m 2h" or "#remind 1d"
-REMIND_TAG_RE = r"#remind\s+((?:\d+\s*[mhd]?\s*)+)"
+# Notifier (notifier.py)
+# Android channel; its importance is fixed on first use.
+NOTIFY_CHANNEL = "Calendar reminders"
+NOTIFY_CHANNEL_IMPORTANT = "alarm_stream"  # rings even on silent
+NOTIFY_GROUP = "calendar-reminders"
+NOTIFY_TAG_PREFIX = "calrem-"
+NOTIFY_CLICK_ACTION = "/calendar"
+NOTIFY_ICON = "mdi:calendar-clock"
+DEFAULT_SNOOZE_MINUTES = (10, 60)
+DEFAULT_ALL_DAY_TIME = "18:00:00"  # as 0.2.0
+COUNTDOWN_HOURS = 12  # closer than this: "In 40 min"; further: "Tomorrow", "In 3 days"

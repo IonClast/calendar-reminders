@@ -1,17 +1,14 @@
 {
   "domain": "calendar_reminders",
   "name": "Calendar Reminders",
-  "codeowners": [],
+  "codeowners": ["@IonClast"],
   "config_flow": true,
-  "dependencies": [
-    "calendar",
-    "http",
-    "frontend"
-  ],
+  "dependencies": ["calendar", "http", "frontend"],
   "documentation": "https://github.com/IonClast/calendar-reminders",
   "integration_type": "service",
   "iot_class": "calculated",
   "issue_tracker": "https://github.com/IonClast/calendar-reminders/issues",
-  "requirements": [],
-  "version": "0.2.0"
+  "requirements": ["ical>=14.3.0"],
+  "single_config_entry": true,
+  "version": "0.3.1"
 }

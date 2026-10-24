@@ -3,18 +3,17 @@
     "step": {
       "user": {
         "title": "Calendar Reminders",
-        "description": "Push reminders for calendar events via the Home Assistant Companion app.",
+        "description": "Pick the calendars to watch. A reminder is sent only for events whose description ends with a #remind line, e.g. \"#remind 1h @anna\". Add the receiving phones and tablets afterwards as devices on the integration page.",
         "data": {
-          "calendars": "Calendars to watch",
-          "notify_services": "Notify targets (your phones)",
-          "offsets_minutes": "Remind this many minutes before timed events",
-          "all_day_time": "Time of day to remind for all-day events",
-          "all_day_days_before": "Days before an all-day event to remind"
+          "calendars": "Calendars"
+        },
+        "data_description": {
+          "calendars": "Local and Google calendars both work. Changes in local calendars are picked up at once, others within 15 minutes."
         }
       }
     },
-    "error": {
-      "invalid_offsets": "Offsets must be positive whole numbers of minutes."
+    "abort": {
+      "single_instance_allowed": "Calendar Reminders is already set up. Change it with Configure, or add devices on the integration page."
     }
   },
   "options": {
@@ -22,16 +21,99 @@
       "init": {
         "title": "Calendar Reminders options",
         "data": {
-          "calendars": "Calendars to watch",
-          "notify_services": "Notify targets (your phones)",
-          "offsets_minutes": "Remind this many minutes before timed events",
-          "all_day_time": "Time of day to remind for all-day events",
-          "all_day_days_before": "Days before an all-day event to remind"
+          "calendars": "Calendars",
+          "default_devices": "Default devices",
+          "fallback_device": "Fallback device",
+          "snooze_short": "Short snooze",
+          "snooze_long": "Long snooze",
+          "all_day_time": "All-day reminder time"
+        },
+        "data_description": {
+          "calendars": "The calendars to watch.",
+          "default_devices": "Get the reminder when a #remind line names no @device.",
+          "fallback_device": "Also gets the reminder when a #remind line names an unknown @device (a typo), with a note saying which.",
+          "snooze_short": "Minutes for the first snooze button.",
+          "snooze_long": "Minutes for the second snooze button.",
+          "all_day_time": "When \"#remind 1d\" (or 2d, 1w, ...) on an all-day event fires, on that day. \"#remind 1d@07:30\" sets its own time."
         }
       }
-    },
-    "error": {
-      "invalid_offsets": "Offsets must be positive whole numbers of minutes."
+    }
+  },
+  "config_subentries": {
+    "device": {
+      "entry_type": "Device",
+      "initiate_flow": {
+        "user": "Add device",
+        "reconfigure": "Edit device"
+      },
+      "step": {
+        "user": {
+          "title": "Add device",
+          "description": "A phone or tablet with the Home Assistant Companion app.",
+          "data": {
+            "alias": "Alias",
+            "notify_action": "Notify action",
+            "language": "Language"
+          },
+          "data_description": {
+            "alias": "Short name used in the #remind line, e.g. anna for \"@anna\". Lowercase letters, digits and _ only.",
+            "notify_action": "The device's notify action, e.g. mobile_app_annas_phone.",
+            "language": "Language of the reminder texts and buttons on this device."
+          }
+        },
+        "reconfigure": {
+          "title": "Edit device",
+          "description": "Changing the alias doesn't update existing #remind lines.",
+          "data": {
+            "alias": "Alias",
+            "notify_action": "Notify action",
+            "language": "Language"
+          },
+          "data_description": {
+            "alias": "Short name used in the #remind line, e.g. anna for \"@anna\". Lowercase letters, digits and _ only.",
+            "notify_action": "The device's notify action, e.g. mobile_app_annas_phone.",
+            "language": "Language of the reminder texts and buttons on this device."
+          }
+        }
+      },
+      "error": {
+        "invalid_alias": "Use lowercase letters, digits and _ only.",
+        "alias_taken": "Another device already uses this alias.",
+        "notify_not_found": "There is no notify action with this name."
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "next": {
+        "name": "Next reminder",
+        "state_attributes": {
+          "pending": {
+            "name": "Pending"
+          },
+          "summary": {
+            "name": "Event"
+          },
+          "calendar": {
+            "name": "Calendar"
+          },
+          "start": {
+            "name": "Event start"
+          },
+          "offset": {
+            "name": "Offset"
+          },
+          "devices": {
+            "name": "Devices"
+          },
+          "important": {
+            "name": "Important"
+          },
+          "snoozed": {
+            "name": "Snoozed"
+          }
+        }
+      }
     }
   }
 }

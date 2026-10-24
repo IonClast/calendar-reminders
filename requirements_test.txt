@@ -1,0 +1,4 @@
+# Test/dev dependencies. 0.13.373 pins homeassistant==2026.10.2 (the live version).
+pytest-homeassistant-custom-component==0.13.373
+ical==14.3.0
+ruff
