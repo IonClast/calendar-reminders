@@ -8,7 +8,11 @@ in `CLAUDE.local.md` (git-ignored), if present.
   (0.3.x → 0.4.0). Bump `manifest.json` `version` with every change pushed for HACS.
 - **Behaviour:** the README is the user-facing description of the `#remind` line, recipients and notifications.
 - **Target:** HA 2026.10.2, frontend 20260930.4, Python 3.14. `hacs.json` minimum is 2026.10.0.
-- **Layout:** `custom_components/calendar_reminders/` (brand images in `brand/`, frontend JS in `www/`), `tests/`.
+- **Layout:** `custom_components/calendar_reminders/` (brand images in `brand/`, frontend ES modules in `www/`, no
+  build step), `tests/` (Python) and `tests/js/` (Node: `node --test "tests/js/*.test.mjs"`).
+- **Frontend:** `www/calendar-reminders.js` is loaded on every page; `dialog-ext.js` patches HA's
+  `dialog-calendar-event-editor` (wraps `showDialog`/`updated`, writes the description through its `change` event);
+  `remind-line.js` must stay in step with `remind_line.py` (`tests/test_js_parity.py`).
 
 ## Dev loop
 - `.venv` (git-ignored) is a Python 3.14 venv from `requirements_test.txt`

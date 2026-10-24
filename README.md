@@ -9,21 +9,22 @@ you choose through the Companion app, with *Snooze* and *Done* buttons. No
 automations, no YAML.
 
 Home Assistant can trigger automations from calendars, but it has no "remind me
-1 hour before" like Google Calendar or Outlook. With this integration you write
-one line at the end of the event's description:
+1 hour before" like Google Calendar or Outlook. This integration adds a
+**Reminders** section to Home Assistant's own *Add / Edit event* dialog: tap
+*1 hour* and *1 day*, tap Anna and Ben, save. Their phones get a reminder a day
+before and an hour before.
 
-```
-#remind 1d 1h @anna @ben
-```
+Behind the scenes the section stores one line at the end of the description,
+`#remind 1d 1h @anna @ben`, so any calendar app can read and write it too.
 
-and Anna's and Ben's phones get a reminder a day before and an hour before.
-
-> **Status:** 0.3.0 is a test version, installable from `main` through HACS.
+> **Status:** 0.4.0 is a test version, installable from `main` through HACS.
 > It replaces 0.2.0, which worked differently (see *Upgrading from 0.2.0*).
 
 ## Features
 
-- **Reminders set on the event itself**, in a `#remind` line. It works in any
+- **Set reminders in Home Assistant's own event dialog** (Calendar panel,
+  calendar card, Companion app), or in the bundled card for wall panels.
+- **Reminders stored on the event itself**, in a `#remind` line. It works in any
   calendar app that can edit the description, including the Google Calendar app.
 - **Recipients per event**: name devices with `@alias`. A line without `@` goes
   to your default devices.
@@ -77,6 +78,44 @@ The order matters, because the options list the devices you have added.
    | Fallback device | Also gets the reminder when the line names an unknown `@device` (a typo), with a note saying which, so you can fix it. |
    | Short / long snooze | Minutes for the two snooze buttons (default 10 and 60). |
    | All-day reminder time | When `1d`, `2d`, `1w` ... on an all-day event fire (default 18:00). |
+
+## Adding reminders
+
+### In Home Assistant's event dialog
+
+Open **Calendar → Add event** (or tap an event to edit it). The same dialog
+opens from the calendar card on any dashboard and in the Companion app. Below
+the description there is a **Reminders** section:
+
+- **When:** tap one or more times: *At start*, *10 min*, *30 min*, *1 hour*,
+  *2 hours*, *1 day before*. For all-day events: *Day before*, *2 days before*,
+  *Week before* (at the all-day reminder time) and *Same day at 07:00*.
+  *Other* adds any value, for example 45 minutes or 3 days before at 09:00.
+- **Who:** tap the devices that should get it. Your own phone is preselected.
+- **Ring even on silent** for important reminders.
+
+Save the event as usual. Opening an existing event shows its reminders, and
+untapping all times removes them. The section writes the `#remind` line into the
+description; you never have to type it.
+
+### The card (wall panels, dashboards)
+
+```yaml
+type: custom:calendar-reminder-card
+title: New appointment      # optional
+calendars:                  # optional; default: the calendars the integration watches
+  - calendar.family
+```
+
+It creates events (title, calendar, all day, start, end, location, description,
+repeat) with the same Reminders section, and lists the coming events: *Edit*
+opens one in the card. For a repeating event, the change applies to that
+occurrence only; edit the whole series in Home Assistant's own dialog.
+
+### In other calendar apps
+
+Write the line yourself as the last line of the description, for example in the
+Google Calendar app. See below.
 
 ## The `#remind` line
 
@@ -159,16 +198,14 @@ actions:
 Event data: `key`, `calendar`, `summary`, `start`, `offset`, `devices`,
 `important`, `late`, `snoozed`, `unknown_devices`.
 
-## Where to write the line
-
-- **Home Assistant's own Add/Edit event dialog**, in the description. A
-  Reminders section inside that dialog is planned for a later version.
-- **Any calendar app** that edits the description, for example the Google
-  Calendar app.
-- The bundled `custom:calendar-reminder-card` (from 0.2.0) still works and
-  writes lines this version understands. It will be rebuilt in a later version.
-
 ## Known limitations
+
+- The Reminders section hooks into Home Assistant's own dialog. A frontend update
+  can change that dialog; then the section doesn't show, the dialog itself keeps
+  working, and the card still works.
+- The card's date and time fields can't tell apart the two passes of the hour
+  that repeats when clocks go back. It refuses to save an event that starts and
+  ends inside that hour; use Home Assistant's own dialog for it.
 
 - Home Assistant can create and delete Google Calendar events but not edit
   them. To change the line on an existing Google event, edit it in Google
@@ -203,6 +240,12 @@ in CI or under WSL:
 pip install -r requirements_test.txt
 pytest
 ruff check . && ruff format --check .
+node --test "tests/js/*.test.mjs"
 ```
+
+The frontend is plain ES modules in `custom_components/calendar_reminders/www/`
+(no build step): `remind-line.js` (the line, a port of `remind_line.py`; a test
+checks both write the same text), `reminders-section.js`, `dialog-ext.js` and
+`calendar-reminder-card.js`.
 
 CI runs hassfest, HACS validation, ruff and pytest on every push.

@@ -14,8 +14,10 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.storage import Store
 from homeassistant.helpers.typing import ConfigType
+from homeassistant.loader import async_get_integration
 from homeassistant.util import dt as dt_util
 
+from . import websocket
 from .config_flow import device_subentries
 from .const import (
     CONF_ALL_DAY_TIME,
@@ -41,7 +43,8 @@ CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
 
 PLATFORMS = [Platform.SENSOR]
 URL_BASE = "/calendar_reminders_static"
-CARD_FILENAME = "calendar-reminder-card.js"
+# Loads the Reminders section for HA's event dialog and the card.
+FRONTEND_MODULE = "calendar-reminders.js"
 
 
 @dataclass(slots=True)
@@ -56,13 +59,16 @@ type CalendarRemindersConfigEntry = ConfigEntry[RuntimeData]
 
 
 async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
-    """Serve the bundled dashboard card and auto-register it."""
+    """Serve the frontend module, register it on every page, add the WebSocket API."""
     if not hass.data.get(f"{DOMAIN}_frontend_registered"):
         www_dir = Path(__file__).parent / "www"
         await hass.http.async_register_static_paths(
             [StaticPathConfig(URL_BASE, str(www_dir), cache_headers=False)]
         )
-        add_extra_js_url(hass, f"{URL_BASE}/{CARD_FILENAME}")
+        # The version in the URL makes browsers load a new release.
+        version = (await async_get_integration(hass, DOMAIN)).version
+        add_extra_js_url(hass, f"{URL_BASE}/{FRONTEND_MODULE}?v={version}")
+        websocket.async_register(hass)
         hass.data[f"{DOMAIN}_frontend_registered"] = True
     return True
 
