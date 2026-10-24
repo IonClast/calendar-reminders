@@ -23,7 +23,9 @@ async def advance(
 ) -> None:
     freezer.move_to(when)
     async_fire_time_changed(hass, when)
-    await hass.async_block_till_done()
+    # Interval and time-change listeners (the 15-min rescan, the 00:05
+    # resubscribe) run as background tasks, which block_till_done skips by default.
+    await hass.async_block_till_done(wait_background_tasks=True)
 
 
 async def settle(hass: HomeAssistant, freezer: FrozenDateTimeFactory) -> None:
