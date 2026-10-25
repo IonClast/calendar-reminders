@@ -17,7 +17,7 @@ before and an hour before.
 Behind the scenes the section stores one line at the end of the description,
 `#remind 1d 1h @anna @ben`, so any calendar app can read and write it too.
 
-> **Status:** 0.5.0 is a test version, installable from `main` through HACS.
+> **Status:** 0.5.1 is a test version, installable through HACS (GitHub releases).
 > It replaces 0.2.0, which worked differently (see *Upgrading from 0.2.0*).
 
 ## Features
