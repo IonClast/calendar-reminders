@@ -38,6 +38,9 @@ NOTIFY_GROUP = "calendar-reminders"
 NOTIFY_TAG_PREFIX = "calrem-"
 NOTIFY_CLICK_ACTION = "/calendar"
 NOTIFY_ICON = "mdi:calendar-clock"
+# Android only turns vibration on for a channel created with a pattern, and a
+# channel keeps the settings it was created with (Companion app handleChannel).
+NOTIFY_VIBRATION = "0, 300, 200, 300"  # wait, buzz, pause, buzz (ms)
 DEFAULT_SNOOZE_MINUTES = (10, 60)
 DEFAULT_ALL_DAY_TIME = "18:00:00"  # as 0.2.0
 COUNTDOWN_HOURS = 12  # closer than this: "In 40 min"; further: "Tomorrow", "In 3 days"

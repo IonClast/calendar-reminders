@@ -37,6 +37,7 @@ from .const import (
     NOTIFY_GROUP,
     NOTIFY_ICON,
     NOTIFY_TAG_PREFIX,
+    NOTIFY_VIBRATION,
 )
 
 if TYPE_CHECKING:
@@ -188,6 +189,7 @@ def build_message(
             "ttl": 0,
             "clickAction": NOTIFY_CLICK_ACTION,
             "notification_icon": NOTIFY_ICON,
+            "vibrationPattern": NOTIFY_VIBRATION,
             "actions": actions,
         },
     }

@@ -13,6 +13,7 @@ import { apply, canonical, parse, parseOffset, serialize, sortTokens } from "./r
 
 const TIMED_PRESETS = ["0", "10m", "30m", "1h", "2h", "1d"];
 const ALL_DAY_PRESETS = ["1d", "2d", "1w", "0d@07:00"];
+const AT_DAYS = [0, 1, 2, 3, 7]; // "At a time": days before the event's date
 
 const STRINGS = {
   en: {
@@ -35,7 +36,9 @@ const STRINGS = {
     unitHour: "hours",
     unitDay: "days",
     unitWeek: "weeks",
-    daysBefore: "days before, at",
+    atTime: "At a time",
+    atDays: ["Same day", "Day before", "2 days before", "3 days before", "1 week before"],
+    at: "at",
     important: "Ring even on silent",
     pickWho: "Pick who gets the reminder.",
     defaults: "No one picked: the default devices get it.",
@@ -62,7 +65,9 @@ const STRINGS = {
     unitHour: "timer",
     unitDay: "dager",
     unitWeek: "uker",
-    daysBefore: "dager før, kl.",
+    atTime: "På et klokkeslett",
+    atDays: ["Samme dag", "Dagen før", "2 dager før", "3 dager før", "1 uke før"],
+    at: "kl.",
     important: "Ring selv på lydløs",
     pickWho: "Velg hvem som skal få påminnelsen.",
     defaults: "Ingen valgt: standardenhetene får den.",
@@ -231,15 +236,17 @@ class CalendarRemindersSection extends HTMLElement {
       if (this._devices.has(value)) this._devices.delete(value);
       else this._devices.add(value);
       this._emit();
-    } else if (act === "add") {
+    } else if (act === "add" || act === "add-at") {
       const root = this.shadowRoot;
-      const n = Number(root.querySelector("#n")?.value);
-      if (!Number.isInteger(n) || n < 0) return;
       let token;
-      if (this._allDay) {
+      if (act === "add-at") {
+        // "At a time": n days before the event's date, at HH:MM (0 = same day).
+        const days = Number(root.querySelector("#ad")?.value || 0);
         const time = root.querySelector("#t")?.value || this._config.all_day_time || "18:00";
-        token = canonical(`${n}d@${time}`);
+        token = canonical(`${days}d@${time}`);
       } else {
+        const n = Number(root.querySelector("#n")?.value);
+        if (!Number.isInteger(n) || n < 0) return;
         token = canonical(`${n}${root.querySelector("#u")?.value || "m"}`);
       }
       if (token) {
@@ -277,15 +284,22 @@ class CalendarRemindersSection extends HTMLElement {
     const deviceChips = (config.devices || [])
       .map((d) => chip("device", d.alias, d.name, this._devices.has(d.alias)))
       .join("");
-    const custom = this._allDay
-      ? `<input id="n" type="number" min="0" max="99" value="1" aria-label="${esc(s.unitDay)}">
-         <span>${esc(s.daysBefore)}</span>
-         <input id="t" type="time" value="${esc(allDayTime)}">`
-      : `<input id="n" type="number" min="0" max="9999" value="15" aria-label="${esc(s.other)}">
-         <select id="u">
+    const before = `<div class="custom"><span>${esc(s.other)}:</span>
+         <input id="n" type="number" min="0" max="9999" value="15" aria-label="${esc(s.other)}">
+         <select id="u" aria-label="${esc(s.other)}">
            <option value="m">${esc(s.unitMin)}</option><option value="h">${esc(s.unitHour)}</option>
            <option value="d">${esc(s.unitDay)}</option><option value="w">${esc(s.unitWeek)}</option>
-         </select>`;
+         </select>
+         <button type="button" class="add" data-act="add">${esc(s.add)}</button></div>`;
+    const dayOptions = AT_DAYS.map(
+      (n, i) => `<option value="${n}" ${n === (this._allDay ? 1 : 0) ? "selected" : ""}>${esc(s.atDays[i])}</option>`,
+    ).join("");
+    const atTime = `<div class="custom"><span>${esc(s.atTime)}:</span>
+         <select id="ad" aria-label="${esc(s.atTime)}">${dayOptions}</select>
+         <span>${esc(s.at)}</span>
+         <input id="t" type="time" value="${esc(allDayTime)}" aria-label="${esc(s.atTime)}">
+         <button type="button" class="add" data-act="add-at">${esc(s.add)}</button></div>`;
+    const custom = this._allDay ? atTime : before + atTime;
     let note = "";
     if (this._off) note = s.off;
     else if (this._offsets.size && !this._implicitDevices && !this._devices.size) note = s.pickWho;
@@ -316,7 +330,7 @@ class CalendarRemindersSection extends HTMLElement {
       <h3>${esc(s.title)}</h3>
       <div class="label">${esc(s.when)}</div>
       <div class="chips">${offsetChips}</div>
-      <div class="custom">${custom}<button type="button" class="add" data-act="add">${esc(s.add)}</button></div>
+      ${custom}
       <div class="label">${esc(s.who)}</div>
       <div class="chips">${deviceChips}</div>
       <label class="important"><input id="important" type="checkbox" ${this._important ? "checked" : ""}>${esc(s.important)}</label>

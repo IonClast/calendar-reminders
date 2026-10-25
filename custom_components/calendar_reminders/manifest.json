@@ -10,5 +10,5 @@
   "issue_tracker": "https://github.com/IonClast/calendar-reminders/issues",
   "requirements": ["ical>=14.3.0"],
   "single_config_entry": true,
-  "version": "0.4.0"
+  "version": "0.4.1"
 }

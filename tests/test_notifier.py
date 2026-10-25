@@ -81,6 +81,7 @@ def test_payload_english() -> None:
         "ttl": 0,
         "clickAction": "/calendar",
         "notification_icon": "mdi:calendar-clock",
+        "vibrationPattern": "0, 300, 200, 300",
         "actions": [
             {"action": f"CALREM_SNOOZE10_{rem.key}_anna", "title": "Snooze 10 min"},
             {"action": f"CALREM_SNOOZE60_{rem.key}_anna", "title": "Snooze 1 h"},

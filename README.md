@@ -90,7 +90,9 @@ the description there is a **Reminders** section:
 - **When:** tap one or more times: *At start*, *10 min*, *30 min*, *1 hour*,
   *2 hours*, *1 day before*. For all-day events: *Day before*, *2 days before*,
   *Week before* (at the all-day reminder time) and *Same day at 07:00*.
-  *Other* adds any value, for example 45 minutes or 3 days before at 09:00.
+  *Other* adds any duration, for example 45 minutes or 3 weeks before.
+  *At a time* picks a clock time: the same day, the day before, 2 or 3 days or
+  a week before, at for example 07:30.
 - **Who:** tap the devices that should get it. Your own phone is preselected.
 - **Ring even on silent** for important reminders.
 
@@ -174,7 +176,17 @@ On a Norwegian device: **⏰ Om 1 time: Dentist**, with *Slumre 10 min · Slumre
   reminder says how far away the event really is. Late reminders are marked
   "(late)", tentative events "(tentative)".
 - Tapping the notification opens the Home Assistant calendar.
-- Android channel: *Calendar reminders* (important ones use the alarm stream).
+- Android channel: *Calendar reminders* (important ones use the alarm stream),
+  created with vibration on.
+- No vibration in vibrate mode? Android keeps the settings a channel was
+  created with, and versions before 0.4.1 created it without vibration. On the
+  phone: *Settings → Apps → Home Assistant → Notifications → Calendar reminders*
+  → turn on vibration. Or remove the channel once from Home Assistant (the next
+  reminder creates it again, with vibration): action `notify.mobile_app_<phone>`,
+  message `remove_channel`, data `channel: Calendar reminders`.
+- A smartwatch shows a reminder only if its phone app forwards notifications
+  from the Home Assistant app (check the watch app's notification settings and
+  its sleep or do-not-disturb mode).
 
 ## Sensor and event
 

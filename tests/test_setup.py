@@ -48,7 +48,7 @@ async def test_reminder_end_to_end(
     await setup(hass, entry)
     assert entry.state is ConfigEntryState.LOADED
     frontend_stub.assert_called_once_with(
-        hass, "/calendar_reminders_static/calendar-reminders.js?v=0.4.0"
+        hass, "/calendar_reminders_static/calendar-reminders.js?v=0.4.1"
     )
 
     await advance(hass, freezer, oslo(2026, 11, 2, 9, 0))
