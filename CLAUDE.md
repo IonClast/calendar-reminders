@@ -6,6 +6,9 @@ in `CLAUDE.local.md` (git-ignored), if present.
 
 - **Versioning:** an incremental change bumps the last number (0.3.0 → 0.3.1); a major change bumps the middle number
   (0.3.x → 0.4.0). Bump `manifest.json` `version` with every change pushed for HACS.
+- **Releases:** HACS installs GitHub releases only. `.github/workflows/release.yml` publishes release
+  `v<manifest version>` automatically after CI passes on `main` (reusing an existing tag). So a new HACS version =
+  bump `manifest.json`, push to `main`. Repository description and topics are set by hand on GitHub.
 - **Behaviour:** the README is the user-facing description of the `#remind` line, recipients and notifications.
 - **Target:** HA 2026.10.2, frontend 20260930.4, Python 3.14. `hacs.json` minimum is 2026.10.0.
 - **Layout:** `custom_components/calendar_reminders/` (brand images in `brand/`, frontend ES modules in `www/`, no

@@ -1,0 +1,44 @@
+name: Release
+
+# HACS shows version numbers only for GitHub releases, and once a repository
+# has releases it offers nothing else. So: after CI passes on main, publish
+# release v<manifest version> unless it exists. An existing tag is reused
+# (never moved); a missing one is created on the commit CI tested.
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          fetch-depth: 0
+      - name: Publish the release for the manifest version
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+        run: |
+          version=$(jq -r .version custom_components/calendar_reminders/manifest.json)
+          tag="v${version}"
+          if gh release view "$tag" >/dev/null 2>&1; then
+            echo "Release $tag already exists; nothing to do."
+            exit 0
+          fi
+          if git rev-parse -q --verify "refs/tags/$tag" >/dev/null; then
+            echo "Using the existing tag $tag ($(git rev-list -n 1 "$tag"))."
+          else
+            git tag "$tag" "$SHA"
+            git push origin "refs/tags/$tag"
+          fi
+          gh release create "$tag" --verify-tag --title "$version" --generate-notes
