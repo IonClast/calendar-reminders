@@ -17,7 +17,7 @@ before and an hour before.
 Behind the scenes the section stores one line at the end of the description,
 `#remind 1d 1h @anna @ben`, so any calendar app can read and write it too.
 
-> **Status:** 0.4.0 is a test version, installable from `main` through HACS.
+> **Status:** 0.5.0 is a test version, installable from `main` through HACS.
 > It replaces 0.2.0, which worked differently (see *Upgrading from 0.2.0*).
 
 ## Features
@@ -179,7 +179,7 @@ On a Norwegian device: **⏰ Om 1 time: Dentist**, with *Slumre 10 min · Slumre
 - Android channel: *Calendar reminders* (important ones use the alarm stream),
   created with vibration on.
 - No vibration in vibrate mode? Android keeps the settings a channel was
-  created with, and versions before 0.4.1 created it without vibration. On the
+  created with, and versions before 0.5.0 created it without vibration. On the
   phone: *Settings → Apps → Home Assistant → Notifications → Calendar reminders*
   → turn on vibration. Or remove the channel once from Home Assistant (the next
   reminder creates it again, with vibration): action `notify.mobile_app_<phone>`,
